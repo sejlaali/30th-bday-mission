@@ -57,7 +57,12 @@ export default function Home(){
  const[foundEggs,setFoundEggs]=useState<Set<string>>(()=>new Set());
  const[slide,setSlide]=useState(0);
  const revealFired=useRef(false),eggsFired=useRef(false);
- useEffect(()=>{const id=setInterval(()=>setSlide(s=>(s+1)%PHOTOS.length),4000);return()=>clearInterval(id)},[]);
+ useEffect(()=>{
+  let intervalId:ReturnType<typeof setInterval>|undefined;
+  const bootMs=prefersReducedMotion()?0:3900; // matches .bootOverlay's curtainWipe duration
+  const bootTimeout=setTimeout(()=>{intervalId=setInterval(()=>setSlide(s=>(s+1)%PHOTOS.length),4000)},bootMs);
+  return()=>{clearTimeout(bootTimeout);if(intervalId)clearInterval(intervalId)};
+ },[]);
  useEffect(()=>{fetch("/api/time",{cache:"no-store"}).then(r=>r.json()).then(x=>setNow(new Date(x.now))).catch(()=>setNow(new Date()));},[]);
  useEffect(()=>{const id=setInterval(()=>setTick(x=>x+1),1000);return()=>clearInterval(id)},[]);
  const current=useMemo(()=>now?new Date(now.getTime()+tick*1000):null,[now,tick]);
