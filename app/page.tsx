@@ -1,5 +1,6 @@
 "use client";
-import {useEffect,useMemo,useState} from "react";
+import {useEffect,useMemo,useRef,useState} from "react";
+import confetti from "canvas-confetti";
 
 const revealAt="2026-09-16T19:00:00-04:00";
 const SHOW_ALL=true; // TEST: set to false to re-lock missions by their real dates
@@ -30,10 +31,31 @@ const PARTICLES=[
 ];
 const RINGS=[3.0,3.3,3.6];
 
+const FUN_FACTS=[
+ "Your prefrontal cortex — the part of your brain responsible for judgment and long-term planning — didn't fully finish developing until your mid-20s. You've had a complete brain for less time than you think.",
+ "Life satisfaction studies consistently show it dips in your 20s and climbs steadily from 30 onward. Statistically, it only gets better from here.",
+ "30 is when most people report finally feeling comfortable in their own skin — caring less what everyone else thinks and more about what actually matters to them.",
+ "Almost none of the atoms in your body are the same ones you had at 20 — your cells have been quietly replacing themselves the whole time. You're practically a new person.",
+ "Peak earning years for most people don't even start until their 30s and 40s. Financially, the best is still ahead.",
+ "Julia Child didn't learn to cook until her late 30s. Vera Wang designed her first dress at 40. Thirty is still early for a great second act.",
+ "Resting heart rate, lung capacity, and grip strength are all still near their lifetime peak at 30.",
+ "Friendships formed in your 30s tend to be some of the most stable and lasting of your life — you finally know what you're actually looking for in people.",
+ "Longevity researchers call the 30s a 'prime decade.' Odds are good you've got 50-plus more great years ahead.",
+ "Confidence, measured across large surveys, tends to be higher at 30 than at 20 — and keeps climbing for decades after.",
+ "You've now had roughly 10,950 days of practice at being exactly who you are. You're extremely good at it by now.",
+ "Emotional intelligence — reading people, situations, yourself — keeps sharpening well past 30, according to most developmental research.",
+ "This is famously the decade people say they stopped comparing their timeline to everyone else's, and started actually enjoying their own.",
+ "Whatever this trip turns out to be, you're walking into it with 30 years of good stories already behind you — and plenty more ahead."
+];
+function factIndexFor(d:Date){const key=d.toISOString().slice(0,10);let h=0;for(let i=0;i<key.length;i++)h=(h*31+key.charCodeAt(i))>>>0;return h%FUN_FACTS.length}
+function prefersReducedMotion(){return typeof window!=="undefined"&&window.matchMedia("(prefers-reduced-motion: reduce)").matches}
+
 export default function Home(){
  const[now,setNow]=useState<Date|null>(null),[tick,setTick]=useState(0),[toast,setToast]=useState<string|null>(null);
  const[activeEgg,setActiveEgg]=useState<string|null>(null),[burstSeed,setBurstSeed]=useState(0);
+ const[foundEggs,setFoundEggs]=useState<Set<string>>(()=>new Set());
  const[photoOk,setPhotoOk]=useState(false);
+ const revealFired=useRef(false),eggsFired=useRef(false);
  useEffect(()=>{const img=new window.Image();img.onload=()=>setPhotoOk(true);img.onerror=()=>setPhotoOk(false);img.src="/elvir.jpg";},[]);
  useEffect(()=>{fetch("/api/time",{cache:"no-store"}).then(r=>r.json()).then(x=>setNow(new Date(x.now))).catch(()=>setNow(new Date()));},[]);
  useEffect(()=>{const id=setInterval(()=>setTick(x=>x+1),1000);return()=>clearInterval(id)},[]);
@@ -41,7 +63,33 @@ export default function Home(){
  const reveal=new Date(revealAt), revealed=FORCE_REVEAL||(!!current&&current>=reveal), left=current?cd(reveal.getTime()-current.getTime()):null;
  const unlocked=(i:number)=>SHOW_ALL||(!!current&&current>=new Date(`2026-09-${String(10+i).padStart(2,"0")}T09:00:00-04:00`));
  const show=(x:string)=>{setToast(x);setTimeout(()=>setToast(null),2600)};
- const toggleEgg=(id:string)=>{setActiveEgg(a=>a===id?null:id);setBurstSeed(s=>s+1)};
+ const toggleEgg=(id:string)=>{
+  setActiveEgg(a=>{const opening=a!==id;if(opening)setFoundEggs(f=>f.has(id)?f:new Set(f).add(id));return opening?id:null});
+  setBurstSeed(s=>s+1);
+ };
+ const fact=FUN_FACTS[factIndexFor(current||new Date())];
+
+ useEffect(()=>{
+  if(!revealed||revealFired.current)return;
+  revealFired.current=true;
+  if(prefersReducedMotion())return;
+  const colors=["#f7f4ed","#7fd6b0","#3a6e5a","#e8c766"];
+  const end=Date.now()+2600;
+  (function frame(){
+   confetti({particleCount:4,angle:60,spread:70,origin:{x:0,y:0.6},colors});
+   confetti({particleCount:4,angle:120,spread:70,origin:{x:1,y:0.6},colors});
+   if(Date.now()<end)requestAnimationFrame(frame);
+  })();
+  confetti({particleCount:130,spread:100,startVelocity:45,origin:{y:0.5},colors});
+ },[revealed]);
+
+ useEffect(()=>{
+  if(foundEggs.size<MISSIONS.length||eggsFired.current)return;
+  eggsFired.current=true;
+  show("You found them all. 🥚✨");
+  if(prefersReducedMotion())return;
+  confetti({particleCount:70,spread:65,scalar:0.75,startVelocity:35,origin:{y:0.35},colors:["#3a6e5a","#7fd6b0","#e8c766"]});
+ },[foundEggs]);
 
  if(revealed)return <main className="reveal"><div className="stars"/><div className="aurora a1"/><div className="aurora a2"/><section className="revealCard"><div className="eyebrow">CLASSIFIED DESTINATION // UNLOCKED</div><p className="intro">You followed the instructions.</p><p className="intro">You packed the right things.</p><p className="intro">And somehow, you still didn't know.</p><div className="word">{["I","C","E","L","A","N","D"].map((x,i)=><span key={x} style={{animationDelay:`${i*.08}s`}}>{x}</span>)}</div><div className="flag">🇮🇸</div><h1>You're going to Iceland.</h1><p className="dates">SEPTEMBER 16–20, 2026</p><div className="divider"/><p className="final">We leave tonight.<br/>Happy 30th, Elvir. ❤️</p><p className="small">YOUR BIRTHDAY ADVENTURE STARTS NOW.</p></section></main>;
 
@@ -84,6 +132,11 @@ export default function Home(){
     ]):<span className="syncing">SYNCING WITH MISSION CONTROL…</span>}
    </div>
    <div className="unlock">SEPTEMBER 16 // 7:00 PM EASTERN</div>
+  </section>
+
+  <section className="factOfDay">
+   <div className="factLabel">FACT OF THE DAY // TURNING 30</div>
+   <p className="factText">{fact}</p>
   </section>
 
   <section className="missions">
