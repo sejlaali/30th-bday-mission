@@ -11,12 +11,12 @@ function cd(ms:number){const t=Math.max(0,Math.floor(ms/1000));return[Math.floor
 type Mission={id:string;date:string;glyph:string;num:string;title:string;intro:string;bullets:string[]|null;eggLine:string;eggNote:string;closing:string[]|null};
 
 const MISSIONS:Mission[]=[
- {id:"a",date:"SEP 10",glyph:"◌",num:"MISSION 001",title:"WATERPROOF",intro:"Bring:",bullets:["Waterproof shoes","A waterproof jacket","Waterproof pants"],eggLine:"You're going to want to stay dry.",eggNote:"Actually, bring two pairs — the trail gets muddy.",closing:["That's all I'm telling you."]},
- {id:"b",date:"SEP 11",glyph:"◇",num:"MISSION 002",title:"LAYERS",intro:"Pack clothes you can easily layer.",bullets:["Long sleeves","Sweaters","A warm mid-layer"],eggLine:"You'll want options.",eggNote:"The weather changes twice a day where we're going.",closing:null},
- {id:"c",date:"SEP 12",glyph:"↖",num:"MISSION 003",title:"CAPTURE",intro:"Bring your:",bullets:["Camera","Drone","Portable chargers / maybe a Type C Adapter"],eggLine:"You're going to want to capture this one.",eggNote:"There's a drone-only shot planned at golden hour.",closing:["Trust me."]},
- {id:"d",date:"SEP 13",glyph:"≈",num:"MISSION 004",title:"SWIM",intro:"Pack a swimsuit.",bullets:null,eggLine:"Yes, you actually need one.",eggNote:"Hint: it's not a pool.",closing:["Don't ask why."]},
- {id:"e",date:"SEP 14",glyph:"□",num:"MISSION 005",title:"DAY BAG",intro:"Bring a small backpack or crossbody bag for daytime exploring.",bullets:null,eggLine:"You'll want your essentials close by.",eggNote:"Snacks count as essentials.",closing:null},
- {id:"f",date:"SEP 15",glyph:"⌂",num:"MISSION 006",title:"COMFORT",intro:"Pack comfortable clothes and shoes.",bullets:null,eggLine:"There will be plenty of exploring.",eggNote:"You'll be doing more walking than you think.",closing:["You'll be glad you did."]}
+ {id:"a",date:"SEP 8",glyph:"◌",num:"MISSION 001",title:"WATERPROOF",intro:"Bring:",bullets:["Waterproof shoes","A waterproof jacket","Waterproof pants"],eggLine:"You're going to want to stay dry.",eggNote:"Actually, bring two pairs — the trail gets muddy.",closing:["That's all I'm telling you."]},
+ {id:"b",date:"SEP 9",glyph:"◇",num:"MISSION 002",title:"LAYERS",intro:"Pack clothes you can easily layer.",bullets:["Long sleeves","Sweaters","A warm mid-layer"],eggLine:"You'll want options.",eggNote:"The weather changes twice a day where we're going.",closing:null},
+ {id:"c",date:"SEP 10",glyph:"↖",num:"MISSION 003",title:"CAPTURE",intro:"Bring your:",bullets:["Camera","Drone","Portable chargers / maybe a Type C Adapter"],eggLine:"You're going to want to capture this one.",eggNote:"There's a drone-only shot planned at golden hour.",closing:["Trust me."]},
+ {id:"d",date:"SEP 11",glyph:"≈",num:"MISSION 004",title:"SWIM",intro:"Pack a swimsuit.",bullets:null,eggLine:"Yes, you actually need one.",eggNote:"Hint: it's not a pool.",closing:["Don't ask why."]},
+ {id:"e",date:"SEP 12",glyph:"□",num:"MISSION 005",title:"DAY BAG",intro:"Bring a small backpack or crossbody bag for daytime exploring.",bullets:null,eggLine:"You'll want your essentials close by.",eggNote:"Snacks count as essentials.",closing:null},
+ {id:"f",date:"SEP 13",glyph:"⌂",num:"MISSION 006",title:"COMFORT",intro:"Pack comfortable clothes and shoes.",bullets:null,eggLine:"There will be plenty of exploring.",eggNote:"You'll be doing more walking than you think.",closing:["You'll be glad you did."]}
 ];
 
 const PARTICLES=[
@@ -61,7 +61,7 @@ export default function Home(){
  useEffect(()=>{const id=setInterval(()=>setTick(x=>x+1),1000);return()=>clearInterval(id)},[]);
  const current=useMemo(()=>now?new Date(now.getTime()+tick*1000):null,[now,tick]);
  const reveal=new Date(revealAt), revealed=FORCE_REVEAL||(!!current&&current>=reveal), left=current?cd(reveal.getTime()-current.getTime()):null;
- const unlocked=(i:number)=>SHOW_ALL||(!!current&&current>=new Date(`2026-09-${String(10+i).padStart(2,"0")}T09:00:00-04:00`));
+ const unlocked=(i:number)=>SHOW_ALL||(!!current&&current>=new Date(`2026-09-${String(8+i).padStart(2,"0")}T09:00:00-04:00`));
  const show=(x:string)=>{setToast(x);setTimeout(()=>setToast(null),2600)};
  const toggleEgg=(id:string)=>{
   setActiveEgg(a=>{const opening=a!==id;if(opening)setFoundEggs(f=>f.has(id)?f:new Set(f).add(id));return opening?id:null});
