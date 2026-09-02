@@ -10,7 +10,8 @@ export default function Home(){
  useEffect(()=>{const id=setInterval(()=>setTick(x=>x+1),1000);return()=>clearInterval(id)},[]);
  useEffect(()=>{const t=setTimeout(()=>setBurst(false),3000);return()=>clearTimeout(t)},[]);
  const current=useMemo(()=>now?new Date(now.getTime()+tick*1000):null,[now,tick]);
- const reveal=new Date(revealAt), revealed=!!current&&current>=reveal, left=current?cd(reveal.getTime()-current.getTime()):null;
+ const FORCE_REVEAL=true; // TEST: set to false to restore the real Sept 16 reveal date
+ const reveal=new Date(revealAt), revealed=FORCE_REVEAL||(!!current&&current>=reveal), left=current?cd(reveal.getTime()-current.getTime()):null;
  const unlocked=(i:number)=>SHOW_ALL||(!!current&&current>=new Date(`2026-09-${String(10+i).padStart(2,"0")}T09:00:00-04:00`));
  const show=(x:string)=>{setEgg(x);setTimeout(()=>setEgg(null),2600)};
  const Egg=({msg}:{msg:string})=><span className="egg" onClick={(e)=>{e.stopPropagation();show(msg)}}>✦</span>;
