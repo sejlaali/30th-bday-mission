@@ -144,6 +144,7 @@ footer button{border:0;background:transparent;color:inherit;cursor:pointer;font:
 
 @media(max-width:800px){
  .heroRow{flex-direction:column;align-items:stretch}
+ .heroText{text-align:center}
  .heroPhoto{order:-1;flex:none;max-width:280px;margin:0 auto}
  .missionsGrid{grid-template-columns:1fr}
  .missionCard{min-height:300px}
