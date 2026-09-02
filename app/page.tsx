@@ -30,6 +30,7 @@ const PARTICLES=[
  {top:"60%",left:"10%",size:4,tx:50,ty:10,delay:3.10}
 ];
 const RINGS=[3.0,3.3,3.6];
+const PHOTOS=["/elvir_1.jpeg","/elvir_2.jpeg","/elvir_3.jpeg","/elvir_4.jpeg","/elvir_5.jpeg"];
 
 const FUN_FACTS=[
  "Your prefrontal cortex — the part of your brain responsible for judgment and long-term planning — didn't fully finish developing until your mid-20s. You've had a complete brain for less time than you think.",
@@ -54,9 +55,9 @@ export default function Home(){
  const[now,setNow]=useState<Date|null>(null),[tick,setTick]=useState(0),[toast,setToast]=useState<string|null>(null);
  const[activeEgg,setActiveEgg]=useState<string|null>(null),[burstSeed,setBurstSeed]=useState(0);
  const[foundEggs,setFoundEggs]=useState<Set<string>>(()=>new Set());
- const[photoOk,setPhotoOk]=useState(false);
+ const[slide,setSlide]=useState(0);
  const revealFired=useRef(false),eggsFired=useRef(false);
- useEffect(()=>{const img=new window.Image();img.onload=()=>setPhotoOk(true);img.onerror=()=>setPhotoOk(false);img.src="/elvir.jpg";},[]);
+ useEffect(()=>{const id=setInterval(()=>setSlide(s=>(s+1)%PHOTOS.length),4000);return()=>clearInterval(id)},[]);
  useEffect(()=>{fetch("/api/time",{cache:"no-store"}).then(r=>r.json()).then(x=>setNow(new Date(x.now))).catch(()=>setNow(new Date()));},[]);
  useEffect(()=>{const id=setInterval(()=>setTick(x=>x+1),1000);return()=>clearInterval(id)},[]);
  const current=useMemo(()=>now?new Date(now.getTime()+tick*1000):null,[now,tick]);
@@ -116,7 +117,7 @@ export default function Home(){
     </div>
     <figure className="heroPhoto">
      <div className="photoFrame">
-      {photoOk?<img src="/elvir.jpg" alt="Elvir"/>:<div className="photoPlaceholder"><span>📷</span><p>Add a photo at<br/><code>public/elvir.jpg</code></p></div>}
+      {PHOTOS.map((src,i)=><img key={src} src={src} alt="Elvir" className={i===slide?"active":""}/>)}
      </div>
      <figcaption className="photoCaption"><span>SUBJECT: ELVIR // AGE 30</span><span className="accent">09.17</span></figcaption>
     </figure>
