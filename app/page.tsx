@@ -3,7 +3,7 @@ import {useEffect,useMemo,useRef,useState} from "react";
 import confetti from "canvas-confetti";
 
 const revealAt="2026-09-16T19:00:00-04:00";
-const SHOW_ALL=true; // TEST: set to false to re-lock missions by their real dates
+const SHOW_ALL=false; // TEST: set to true to unlock all missions immediately for testing
 const FORCE_REVEAL=false; // TEST: set to true to preview the reveal screen
 
 function cd(ms:number){const t=Math.max(0,Math.floor(ms/1000));return[Math.floor(t/86400),Math.floor(t%86400/3600),Math.floor(t%3600/60),t%60]}
