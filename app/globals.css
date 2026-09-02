@@ -90,7 +90,8 @@ code{font-family:"IBM Plex Mono",monospace}
 .missionsHead>span{font:11px "IBM Plex Mono",monospace;color:var(--muted)}
 .missionsHead h2{margin:0;font-size:clamp(32px,5vw,58px);letter-spacing:-.05em}
 .missionsHead p{margin:7px 0 0;color:var(--muted);font-size:13px}
-.missionsGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+.missionsGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+@media(max-width:1000px){.missionsGrid{grid-template-columns:repeat(2,1fr)}}
 .missionCard{background:var(--paper);padding:36px;min-height:340px;display:flex;flex-direction:column;opacity:0;animation:gridFadeIn .6s ease-out forwards}
 .missionCard.locked{animation:none;opacity:.55}
 .missionTop{display:flex;justify-content:space-between;align-items:center;font:13px "IBM Plex Mono",monospace;letter-spacing:.1em;color:var(--muted)}
@@ -114,7 +115,6 @@ code{font-family:"IBM Plex Mono",monospace}
 .teaser{text-align:center;padding:60px 24px 110px;color:var(--muted)}
 .teaser button{border:0;background:transparent;font-size:24px;color:var(--accent);cursor:pointer;animation:twinkle 2.4s ease-in-out infinite}
 .teaser p{font:20px "Instrument Serif",serif;font-style:italic;margin:18px 0 6px}
-.teaser span{font:10px "IBM Plex Mono",monospace}
 footer{border-top:1px solid var(--line);padding:22px clamp(24px,5vw,64px);display:flex;justify-content:space-between;color:var(--muted);font:11px "IBM Plex Mono",monospace;letter-spacing:.13em;text-transform:uppercase}
 footer button{border:0;background:transparent;color:inherit;cursor:pointer;font:inherit}
 .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--ink);color:var(--white);padding:14px 18px;z-index:70;font:12px "IBM Plex Mono",monospace}

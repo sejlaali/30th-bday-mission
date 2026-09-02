@@ -106,7 +106,7 @@ export default function Home(){
    </div>
   </section>
 
-  <section className="teaser"><button onClick={()=>show("You found something. But not the destination. 👀")}>✦</button><p>Some things are better discovered than explained.</p><span>— Sejla, Selma &amp; Michael</span></section>
+  <section className="teaser"><button onClick={()=>show("You found something. But not the destination. 👀")}>✦</button><p>Some things are better discovered than explained.</p></section>
   <footer><span>MISSION STATUS: ACTIVE</span><span>◦</span><button onClick={()=>show("Good instincts. Still classified.")}>ACCESS DENIED</button></footer>
   {toast&&<div className="toast">{toast}</div>}
  </main>;
