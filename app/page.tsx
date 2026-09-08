@@ -67,7 +67,7 @@ export default function Home(){
  useEffect(()=>{const id=setInterval(()=>setTick(x=>x+1),1000);return()=>clearInterval(id)},[]);
  const current=useMemo(()=>now?new Date(now.getTime()+tick*1000):null,[now,tick]);
  const reveal=new Date(revealAt), revealed=FORCE_REVEAL||(!!current&&current>=reveal), left=current?cd(reveal.getTime()-current.getTime()):null;
- const unlocked=(i:number)=>SHOW_ALL||(!!current&&current>=new Date(`2026-09-${String(8+i).padStart(2,"0")}T09:00:00-04:00`));
+ const unlocked=(i:number)=>SHOW_ALL||(!!current&&current>=new Date(`2026-09-${String(8+i).padStart(2,"0")}T00:00:00-04:00`));
  const show=(x:string)=>{setToast(x);setTimeout(()=>setToast(null),2600)};
  const toggleEgg=(id:string)=>{
   setActiveEgg(a=>{const opening=a!==id;if(opening)setFoundEggs(f=>f.has(id)?f:new Set(f).add(id));return opening?id:null});
