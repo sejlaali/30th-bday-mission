@@ -4,7 +4,9 @@ import confetti from "canvas-confetti";
 
 const revealAt="2026-09-16T19:00:00-04:00";
 const SHOW_ALL=false; // TEST: set to true to unlock all missions immediately for testing
-const FORCE_REVEAL=false; // TEST: set to true to preview the reveal screen
+const FORCE_REVEAL=false; // TEST: set to true to skip straight to the reveal screen
+const FORCE_PUZZLE=false; // TEST: set to true to preview the airport code puzzle
+const AIRPORT_CODE="KEF";
 
 function cd(ms:number){const t=Math.max(0,Math.floor(ms/1000));return[Math.floor(t/86400),Math.floor(t%86400/3600),Math.floor(t%3600/60),t%60]}
 
@@ -56,7 +58,13 @@ export default function Home(){
  const[activeEgg,setActiveEgg]=useState<string|null>(null),[burstSeed,setBurstSeed]=useState(0);
  const[foundEggs,setFoundEggs]=useState<Set<string>>(()=>new Set());
  const[slide,setSlide]=useState(0);
+ const[solved,setSolved]=useState(false);
+ const[letters,setLetters]=useState<string[]>(["","",""]);
+ const[wrongCount,setWrongCount]=useState(0);
+ const[shake,setShake]=useState(false);
+ const inputRefs=useRef<(HTMLInputElement|null)[]>([]);
  const revealFired=useRef(false),eggsFired=useRef(false);
+ useEffect(()=>{try{if(localStorage.getItem("kefSolved")==="1")setSolved(true)}catch{}},[]);
  useEffect(()=>{
   let intervalId:ReturnType<typeof setInterval>|undefined;
   const bootMs=prefersReducedMotion()?0:3900; // matches .bootOverlay's curtainWipe duration
@@ -66,12 +74,34 @@ export default function Home(){
  useEffect(()=>{fetch("/api/time",{cache:"no-store"}).then(r=>r.json()).then(x=>setNow(new Date(x.now))).catch(()=>setNow(new Date()));},[]);
  useEffect(()=>{const id=setInterval(()=>setTick(x=>x+1),1000);return()=>clearInterval(id)},[]);
  const current=useMemo(()=>now?new Date(now.getTime()+tick*1000):null,[now,tick]);
- const reveal=new Date(revealAt), revealed=FORCE_REVEAL||(!!current&&current>=reveal), left=current?cd(reveal.getTime()-current.getTime()):null;
+ const reveal=new Date(revealAt), countdownDone=!!current&&current>=reveal, revealed=solved||FORCE_REVEAL, left=current?cd(reveal.getTime()-current.getTime()):null;
  const unlocked=(i:number)=>SHOW_ALL||(!!current&&current>=new Date(`2026-09-${String(8+i).padStart(2,"0")}T00:00:00-04:00`));
  const show=(x:string)=>{setToast(x);setTimeout(()=>setToast(null),2600)};
  const toggleEgg=(id:string)=>{
   setActiveEgg(a=>{const opening=a!==id;if(opening)setFoundEggs(f=>f.has(id)?f:new Set(f).add(id));return opening?id:null});
   setBurstSeed(s=>s+1);
+ };
+ const setLetter=(i:number,val:string)=>{
+  const ch=val.replace(/[^a-zA-Z]/g,"").slice(-1).toUpperCase();
+  setLetters(l=>{const n=[...l];n[i]=ch;return n});
+  if(ch&&i<letters.length-1)inputRefs.current[i+1]?.focus();
+ };
+ const onKeyDown=(i:number,e:React.KeyboardEvent<HTMLInputElement>)=>{
+  if(e.key==="Backspace"&&!letters[i]&&i>0)inputRefs.current[i-1]?.focus();
+  if(e.key==="Enter")checkGuess();
+ };
+ const checkGuess=()=>{
+  if(letters.some(l=>!l))return;
+  if(letters.join("")===AIRPORT_CODE){
+   setSolved(true);
+   try{localStorage.setItem("kefSolved","1")}catch{}
+  }else{
+   setWrongCount(w=>w+1);
+   setShake(true);
+   setTimeout(()=>setShake(false),500);
+   setLetters(letters.map(()=>""));
+   inputRefs.current[0]?.focus();
+  }
  };
  const fact=FUN_FACTS[factIndexFor(current||new Date())];
 
@@ -96,6 +126,24 @@ export default function Home(){
   if(prefersReducedMotion())return;
   confetti({particleCount:70,spread:65,scalar:0.75,startVelocity:35,origin:{y:0.35},colors:["#3a6e5a","#7fd6b0","#e8c766"]});
  },[foundEggs]);
+
+ if(!revealed&&(countdownDone||FORCE_PUZZLE))return <main className="puzzle"><div className="stars"/><div className="aurora a1"/><div className="aurora a2"/>
+  <section className="puzzleCard">
+   <div className="eyebrow">FINAL LOCK // AIRPORT CODE REQUIRED</div>
+   <h1 className="puzzleTitle">One last thing before we go.</h1>
+   <p className="puzzleCopy">The countdown's done. But the destination stays classified until you crack this: enter the 3-letter airport code we're flying into.</p>
+   <div className={`codeRow${shake?" shake":""}`}>
+    {letters.map((l,i)=><input key={i} ref={el=>{inputRefs.current[i]=el}} className="codeBox" value={l} maxLength={1} inputMode="text" autoCapitalize="characters" autoCorrect="off" spellCheck={false} aria-label={`letter ${i+1} of 3`} onChange={e=>setLetter(i,e.target.value)} onKeyDown={e=>onKeyDown(i,e)}/>)}
+   </div>
+   <button className="unlockBtn" disabled={letters.some(x=>!x)} onClick={checkGuess}>UNLOCK</button>
+   {wrongCount>0&&<p className="puzzleFeedback">Not quite. Try again.</p>}
+   <div className="hints">
+    {wrongCount>=2&&<p className="hintLine">HINT 1 — Think back to the mission you weren't allowed to ask about. That swimsuit wasn't for a pool.</p>}
+    {wrongCount>=4&&<p className="hintLine">HINT 2 — The code starts with <b>K</b>.</p>}
+    {wrongCount>=6&&<p className="hintLine">HINT 3 — <b>K E _</b>. One letter to go.</p>}
+   </div>
+  </section>
+ </main>;
 
  if(revealed)return <main className="reveal"><div className="stars"/><div className="aurora a1"/><div className="aurora a2"/><section className="revealCard"><div className="eyebrow">CLASSIFIED DESTINATION // UNLOCKED</div><p className="intro">You followed the instructions.</p><p className="intro">You packed the right things.</p><p className="intro">And somehow, you still didn't know.</p><div className="word">{["I","C","E","L","A","N","D"].map((x,i)=><span key={x} style={{animationDelay:`${i*.08}s`}}>{x}</span>)}</div><div className="flag">🇮🇸</div><h1>You're going to Iceland.</h1><p className="dates">SEPTEMBER 16–20, 2026</p><div className="divider"/><p className="final">We leave tonight.<br/>Happy 30th, Elvir. ❤️</p><p className="small">YOUR BIRTHDAY ADVENTURE STARTS NOW.</p></section></main>;
 
