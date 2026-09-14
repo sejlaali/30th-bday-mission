@@ -138,9 +138,10 @@ export default function Home(){
    <button className="unlockBtn" disabled={letters.some(x=>!x)} onClick={checkGuess}>UNLOCK</button>
    {wrongCount>0&&<p className="puzzleFeedback">Not quite. Try again.</p>}
    <div className="hints">
-    {wrongCount>=2&&<p className="hintLine">HINT 1 — Think back to the mission you weren't allowed to ask about. That swimsuit wasn't for a pool.</p>}
-    {wrongCount>=4&&<p className="hintLine">HINT 2 — The code starts with <b>K</b>.</p>}
-    {wrongCount>=6&&<p className="hintLine">HINT 3 — <b>K E _</b>. One letter to go.</p>}
+    <p className="hintLine">HINT 1 — Think about what you already packed: waterproof shoes, a swimsuit that isn't for a pool, and a drone charged for golden hour.</p>
+    {wrongCount>=2&&<p className="hintLine">HINT 2 — That swimsuit wasn't for a pool. It was for a hot spring.</p>}
+    {wrongCount>=4&&<p className="hintLine">HINT 3 — It's the land of fire and ice.</p>}
+    {wrongCount>=6&&<p className="hintLine">HINT 4 — <b>K E _</b>. One letter to go.</p>}
    </div>
   </section>
  </main>;
