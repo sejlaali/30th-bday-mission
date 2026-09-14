@@ -2,7 +2,7 @@
 import {useEffect,useMemo,useRef,useState} from "react";
 import confetti from "canvas-confetti";
 
-const revealAt="2026-09-16T19:00:00-04:00";
+const revealAt="2026-09-16T18:30:00-04:00";
 const SHOW_ALL=false; // TEST: set to true to unlock all missions immediately for testing
 const FORCE_REVEAL=false; // TEST: set to true to skip straight to the reveal screen
 const FORCE_PUZZLE=false; // TEST: set to true to preview the airport code puzzle
@@ -186,7 +186,7 @@ export default function Home(){
      <div className="unit" key={"u"+i}><div className="val">{String(x).padStart(2,"0")}</div><div className="lbl">{["DAYS","HRS","MIN","SEC"][i]}</div></div>
     ]):<span className="syncing">SYNCING WITH MISSION CONTROL…</span>}
    </div>
-   <div className="unlock">SEPTEMBER 16 // 7:00 PM EASTERN</div>
+   <div className="unlock">SEPTEMBER 16 // 6:30 PM EASTERN</div>
   </section>
 
   <section className="factOfDay">

@@ -10,7 +10,7 @@ Sept 13 SWIM
 Sept 14 DAY BAG
 Sept 15 COMFORT
 
-Destination reveal: Sept 16 at 7:00 PM Eastern.
+Destination reveal: Sept 16 at 6:30 PM Eastern.
 
 Run locally with `npm install` then `npm run dev`.
 Push to GitHub and import the repository into Vercel.
